@@ -6,7 +6,16 @@
     <title>Porsche Configurator</title>
 
     <!-- Link to External Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Css/style.css">
+
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,6 +27,274 @@
     <link rel="preload" href="style.css" as="style">
 </head>
 <body>
+     <!-- Advanced Animated Background -->
+    <div class="cyber-grid"></div>
+    <div class="holographic-scan"></div>
+    <div class="floating-elements">
+        <div class="float-element el1"></div>
+        <div class="float-element el2"></div>
+        <div class="float-element el3"></div>
+    </div>
+    
+    <!-- Glitch Effect Overlay -->
+    <div class="glitch-overlay"></div>
+    
+    <!-- Login Modal (Enhanced) -->
+    <div id="loginModal" class="modal neo-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-logo">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2>PORSCHE EXCLUSIVE ACCESS</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" class="neo-form">
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-user-shield"></i>
+                            <span>IDENTIFICATION</span>
+                        </div>
+                        <input type="text" id="username" name="username" required 
+                               placeholder="ENTER EMAIL / USERNAME">
+                        <div class="input-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-key"></i>
+                            <span>ACCESS CODE</span>
+                        </div>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="ENTER SECURITY CODE">
+                        <div class="input-line"></div>
+                    </div>
+                    <button type="submit" class="btn-login neo-btn">
+                        <span class="btn-text">AUTHENTICATE</span>
+                        <span class="btn-glow"></span>
+                        <i class="fas fa-fingerprint"></i>
+                    </button>
+                    <p class="form-footer">
+                        NEW USER? <a href="#" id="showRegister" class="neo-link">REQUEST ACCESS</a>
+                    </p>
+                </form>
+                <form id="registerForm" class="neo-form" style="display: none;">
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-id-card"></i>
+                            <span>FULL NAME</span>
+                        </div>
+                        <input type="text" id="regUsername" name="regUsername" required 
+                               placeholder="ENTER FULL NAME">
+                        <div class="input-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-envelope"></i>
+                            <span>EMAIL ADDRESS</span>
+                        </div>
+                        <input type="email" id="regEmail" name="regEmail" required 
+                               placeholder="ENTER SECURE EMAIL">
+                        <div class="input-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-lock"></i>
+                            <span>SECURITY CODE</span>
+                        </div>
+                        <input type="password" id="regPassword" name="regPassword" required 
+                               placeholder="CREATE SECURE PASSWORD">
+                        <div class="input-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-check-double"></i>
+                            <span>CONFIRM CODE</span>
+                        </div>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required 
+                               placeholder="RE-ENTER SECURITY CODE">
+                        <div class="input-line"></div>
+                    </div>
+                    <button type="submit" class="btn-register neo-btn">
+                        <span class="btn-text">CREATE IDENTITY</span>
+                        <span class="btn-glow"></span>
+                        <i class="fas fa-user-plus"></i>
+                    </button>
+                    <p class="form-footer">
+                        EXISTING USER? <a href="#" id="showLogin" class="neo-link">AUTHENTICATE</a>
+                    </p>
+                </form>
+                <div id="loginMessage" class="neo-message"></div>
+                
+                <div class="demo-hint">
+                    <i class="fas fa-info-circle"></i>
+                    <span>DEMO ACCESS: <strong>demo@porsche.com</strong> / <strong>demo123</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="header neo-header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo neo-logo">
+                    <div class="logo-icon">
+                        <div class="logo-pulse">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="logo-ring"></div>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-primary">PORSCHE</span>
+                        <span class="logo-secondary">EXCLUSIVE</span>
+                        <div class="logo-tagline">NEOLUXURY</div>
+                    </div>
+                </a>
+
+                <div class="nav-center">
+                    <div class="nav-status">
+                        <i class="fas fa-circle status-active"></i>
+                        <span>CONFIGURATION ACTIVE</span>
+                    </div>
+                </div>
+
+                
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>DASHBOARD</span>
+                        <div class="nav-line"></div>
+                    </a></li>
+                    <li><a href="#models" class="nav-link">
+                        <i class="fas fa-car-side"></i>
+                        <span>VEHICLE MATRIX</span>
+                        <div class="nav-line"></div>
+                    </a></li>
+                    <li><a href="#customize" class="nav-link">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>CONFIGURATOR</span>
+                        <div class="nav-line"></div>
+                    </a></li>
+                    <li><a href="#about" class="nav-link">
+                        <i class="fas fa-info-circle"></i>
+                        <span>SYSTEM INFO</span>
+                        <div class="nav-line"></div>
+                    </a></li>
+                    <li><button id="loginBtn" class="btn-login-nav neo-btn">
+                        <i class="fas fa-terminal"></i>
+                        <span>SYSTEM ACCESS</span>
+                    </button></li>
+                </ul>
+
+                <div class="nav-right">
+                    <div class="theme-toggle">
+                        <button id="themeToggle" class="theme-btn">
+                            <i class="fas fa-moon"></i>
+                            <i class="fas fa-sun"></i>
+                            <span class="theme-slider"></span>
+                        </button>
+                    </div>
+                    
+                    <div class="hamburger" id="hamburger">
+                        <span class="line1"></span>
+                        <span class="line2"></span>
+                        <span class="line3"></span>
+                        <div class="hamburger-glow"></div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section (Enhanced) -->
+    <section class="hero neo-hero" id="home">
+        <div class="hero-bg">
+            <canvas id="heroCanvas"></canvas>
+            <div class="hero-gradient"></div>
+        </div>
+        
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-text">NEOLUXURY EDITION</span>
+                    <div class="badge-glow"></div>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="title-line title-line1">CRAFT YOUR</span>
+                    <span class="title-line title-line2">DIGITAL</span>
+                    <span class="title-line title-line3">
+                        <span class="title-gradient">PORSCHE</span>
+                        <span class="title-cursor">█</span>
+                    </span>
+                </h1>
+                
+                <p class="hero-subtitle">
+                    EXPERIENCE THE FUTURE OF LUXURY AUTOMOTIVE CUSTOMIZATION WITH OUR 
+                    <span class="highlight">AI-POWERED 3D CONFIGURATOR</span> AND 
+                    <span class="highlight">REAL-TIME RAY TRACING</span> TECHNOLOGY.
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">0.2s</div>
+                            <div class="stat-label">REAL-TIME RENDERING</div>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">∞</div>
+                            <div class="stat-label">CONFIGURATIONS</div>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">8K</div>
+                            <div class="stat-label">VISUAL FIDELITY</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-buttons">
+                    <a href="#customize" class="btn-primary neo-btn btn-large">
+                        <span class="btn-glow"></span>
+                        <i class="fas fa-play-circle"></i>
+                        <span class="btn-text">LAUNCH CONFIGURATOR</span>
+                        <div class="btn-pulse"></div>
+                    </a>
+                </div>
+                
+                <div class="hero-scroll">
+                    <div class="scroll-text">SCROLL TO CONFIGURE</div>
+                    <div class="scroll-line">
+                        <div class="scroll-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="car-hologram">
+                <div class="hologram-grid"></div>
+                <div class="hologram-scan"></div>
+                <div class="car-silhouette">
+                    <div class="silhouette-glow"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     
 </body>
 </html>
