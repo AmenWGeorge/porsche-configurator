@@ -17,7 +17,7 @@ $email = sanitizeInput($data['email'] ?? '');
 $password = $data['password'] ?? '';
 
 // Validate input
-if (empty($username)  empty($email)  empty($password)) {
+if (empty($username) || empty($email) || empty($password)) {
     sendResponse(false, 'All fields are required');
 }
 

@@ -134,7 +134,8 @@ try {
     // Cleanup
     $stmt->close();
     $conn->close();
-    } catch (Exception $e) {
+
+} catch (Exception $e) {
     // Error response
     http_response_code($e->getCode() ?: 500);
     
