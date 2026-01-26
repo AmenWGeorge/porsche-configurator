@@ -578,7 +578,6 @@ body.light-mode .theme-slider {
     left: calc(100% - 26px);
     background: var(--cyber-yellow);
     box-shadow: 0 0 10px var(--cyber-yellow);
-
 }
 
 .hamburger {
