@@ -40,3 +40,24 @@ function getDBConnection() {
         return null;
     }
 }
+
+// Global response helper
+function sendResponse($success, $message = '', $data = null, $statusCode = 200) {
+    http_response_code($statusCode);
+    echo json_encode([
+        'success' => $success,
+        'message' => $message,
+        'data' => $data,
+        'timestamp' => date('Y-m-d H:i:s')
+    ]);
+    exit();
+}
+
+// Security: Sanitize input
+function sanitizeInput($input) {
+    if (is_array($input)) {
+        return array_map('sanitizeInput', $input);
+    }
+    return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
+}
+?>
