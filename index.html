@@ -443,6 +443,168 @@
                     </div>
                 </div>
                 
+                <div class="customization-panel neo-glass">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>CONFIGURATION MATRIX</span>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-sections">
+                        <!-- Color Section -->
+                        <div class="panel-section">
+                            <div class="section-header">
+                                <i class="fas fa-palette"></i>
+                                <h3>EXTERIOR FINISH</h3>
+                                <div class="section-badge">ADVANCED</div>
+                            </div>
+                            
+                            <div class="color-matrix">
+                                <div class="color-presets">
+                                    <div class="preset-title">PRESET FINISHES</div>
+                                    <div class="color-grid">
+                                        <div class="color-preset active" data-color="#0a0a0a" data-finish="glossy">
+                                            <div class="color-sample" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);"></div>
+                                            <div class="color-name">CARBON BLACK</div>
+                                            <div class="color-glow"></div>
+                                        </div>
+                                        <div class="color-preset" data-color="#c00" data-finish="metallic">
+                                            <div class="color-sample" style="background: linear-gradient(135deg, #c00 0%, #ff3333 100%);"></div>
+                                            <div class="color-name">GUARDS RED</div>
+                                            <div class="color-glow"></div>
+                                        </div>
+                                        <div class="color-preset" data-color="#06c" data-finish="pearl">
+                                            <div class="color-sample" style="background: linear-gradient(135deg, #06c 0%, #0088cc 100%);"></div>
+                                            <div class="color-name">GENTIAN BLUE</div>
+                                            <div class="color-glow"></div>
+                                        </div>
+                                        <div class="color-preset" data-color="#0a5" data-finish="metallic">
+                                            <div class="color-sample" style="background: linear-gradient(135deg, #0a5 0%, #00cc66 100%);"></div>
+                                            <div class="color-name">MIAMI BLUE</div>
+                                            <div class="color-glow"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="color-custom">
+                                    <div class="custom-title">CUSTOM SPECTRUM</div>
+                                    <div class="color-picker-container">
+                                        <input type="color" id="customColor" value="#0a0a0a" class="neo-color-picker">
+                                    </div>
+                                </div>
+                                
+                                <div class="finish-options">
+                                    <div class="finish-title">SURFACE TREATMENT</div>
+                                    <div class="finish-grid">
+                                        <button class="finish-btn active" data-finish="glossy">
+                                            <i class="fas fa-gem"></i>
+                                            <span>GLOSS</span>
+                                            <div class="finish-preview"></div>
+                                        </button>
+                                        <button class="finish-btn" data-finish="metallic">
+                                            <i class="fas fa-atom"></i>
+                                            <span>METALLIC</span>
+                                            <div class="finish-preview"></div>
+                                        </button>
+                                        <button class="finish-btn" data-finish="matte">
+                                            <i class="fas fa-cloud"></i>
+                                            <span>MATTE</span>
+                                            <div class="finish-preview"></div>
+                                        </button>
+                                        <button class="finish-btn" data-finish="pearl">
+                                            <i class="fas fa-sparkles"></i>
+                                            <span>PEARL</span>
+                                            <div class="finish-preview"></div>
+                                        </button>
+                                        <button class="finish-btn" data-finish="chrome">
+                                            <i class="fas fa-mirror"></i>
+                                            <span>CHROME</span>
+                                            <div class="finish-preview"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Wheels Section -->
+                        <div class="panel-section">
+                            <div class="section-header">
+                                <i class="fas fa-cog"></i>
+                                <h3>WHEEL CONFIGURATION</h3>
+                                <div class="section-badge">PERFORMANCE</div>
+                            </div>
+                            
+                            <div class="wheel-selector">
+                                <div class="wheel-presets">
+                                    <div class="wheel-preset active" data-wheel="classic">
+                                        <div class="wheel-visual">
+                                            <div class="wheel-spin"></div>
+                                            <i class="fas fa-circle-notch"></i>
+                                        </div>
+                                        <div class="wheel-info">
+                                            <div class="wheel-name">CLASSIC ALLOY</div>
+                                            <div class="wheel-spec">21" STANDARD</div>
+                                        </div>
+                                    </div>
+                                    <div class="wheel-preset" data-wheel="sport">
+                                        <div class="wheel-visual">
+                                            <div class="wheel-spin"></div>
+                                            <i class="fas fa-compact-disc"></i>
+                                        </div>
+                                        <div class="wheel-info">
+                                            <div class="wheel-name">SPORT DESIGN</div>
+                                            <div class="wheel-spec">21" PERFORMANCE</div>
+                                        </div>
+                                    </div>
+                                    <div class="wheel-preset" data-wheel="premium">
+                                        <div class="wheel-visual">
+                                            <div class="wheel-spin"></div>
+                                            <i class="fas fa-sun"></i>
+                                        </div>
+                                        <div class="wheel-info">
+                                            <div class="wheel-name">PREMIUM ALLOY</div>
+                                            <div class="wheel-spec">22" EXCLUSIVE</div>
+                                        </div>
+                                    </div>
+                                    <div class="wheel-preset" data-wheel="racing">
+                                        <div class="wheel-visual">
+                                            <div class="wheel-spin"></div>
+                                            <i class="fas fa-bolt"></i>
+                                        </div>
+                                        <div class="wheel-info">
+                                            <div class="wheel-name">RACING PACKAGE</div>
+                                            <div class="wheel-spec">22" TRACK</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="wheel-custom">
+                                    <div class="custom-option">
+                                        <label>FINISH</label>
+                                        <div class="color-options">
+                                            <div class="color-option active" data-color="silver">
+                                                <div class="color-dot" style="background: #c0c0c0;"></div>
+                                                <span>SILVER</span>
+                                            </div>
+                                            <div class="color-option" data-color="black">
+                                                <div class="color-dot" style="background: #0a0a0a;"></div>
+                                                <span>BLACK</span>
+                                            </div>
+                                            <div class="color-option" data-color="bronze">
+                                                <div class="color-dot" style="background: #cd7f32;"></div>
+                                                <span>BRONZE</span>
+                                            </div>
+                                            <div class="color-option" data-color="gold">
+                                                <div class="color-dot" style="background: #ffd700;"></div>
+                                                <span>GOLD</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                 
     <!-- Models Section (Enhanced) -->
     <section class="models section-padding" id="models">
