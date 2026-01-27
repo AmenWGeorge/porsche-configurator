@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Porsche Configurator</title>
-
+    
     <!-- Link to External Stylesheet -->
     <link rel="stylesheet" href="Css/style.css">
 
-    
+
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
@@ -27,7 +27,7 @@
     <link rel="preload" href="style.css" as="style">
 </head>
 <body>
-     <!-- Advanced Animated Background -->
+    <!-- Advanced Animated Background -->
     <div class="cyber-grid"></div>
     <div class="holographic-scan"></div>
     <div class="floating-elements">
@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    <!-- Header Navigation -->
+<!-- Header Navigation -->
     <header class="header neo-header">
         <div class="container">
             <nav class="navbar">
@@ -153,15 +153,15 @@
                         <div class="logo-tagline">NEOLUXURY</div>
                     </div>
                 </a>
-
+                
                 <div class="nav-center">
                     <div class="nav-status">
                         <i class="fas fa-circle status-active"></i>
                         <span>CONFIGURATION ACTIVE</span>
                     </div>
                 </div>
-
-<ul class="nav-links">
+                
+                <ul class="nav-links">
                     <li><a href="#home" class="nav-link">
                         <i class="fas fa-home"></i>
                         <span>DASHBOARD</span>
@@ -187,7 +187,7 @@
                         <span>SYSTEM ACCESS</span>
                     </button></li>
                 </ul>
-
+                
                 <div class="nav-right">
                     <div class="theme-toggle">
                         <button id="themeToggle" class="theme-btn">
@@ -208,7 +208,7 @@
         </div>
     </header>
 
-    <!-- Hero Section (Enhanced) -->
+<!-- Hero Section (Enhanced) -->
     <section class="hero neo-hero" id="home">
         <div class="hero-bg">
             <canvas id="heroCanvas"></canvas>
@@ -255,7 +255,7 @@
                             <div class="stat-value">∞</div>
 
 
-<div class="stat-label">CONFIGURATIONS</div>
+                            <div class="stat-label">CONFIGURATIONS</div>
                         </div>
                     </div>
                     <div class="hero-stat">
@@ -298,7 +298,7 @@
         </div>
     </section>
 
-    <!-- Enhanced Stats Counter -->
+<!-- Enhanced Stats Counter -->
     <section class="stats-counter">
         <div class="container">
             <div class="stats-grid">
@@ -346,7 +346,105 @@
         </div>
     </section>
 
-  <!-- Models Section (Enhanced) -->
+    <!-- 3D Car Visualization -->
+    <section class="car-visualization section-padding" id="customize">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">
+                    <i class="fas fa-cube"></i>
+                    <span>3D CONFIGURATION SUITE</span>
+                </div>
+                <h2 class="section-title">IMMERSIVE CUSTOMIZATION</h2>
+                <p class="section-subtitle">
+                    INTERACT WITH YOUR PORSCHE IN REAL-TIME 3D SPACE
+                </p>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="canvas-container neo-glass">
+                    <div class="canvas-header">
+                        <div class="canvas-title">
+                            <i class="fas fa-eye"></i>
+                            <span>LIVE RENDERING VIEWPORT</span>
+                        </div>
+                        <div class="canvas-stats">
+                            <span class="stat"><i class="fas fa-cube"></i> POLYGONS: <span id="polyCount">1.2M</span></span>
+                            <span class="stat"><i class="fas fa-sync"></i> FPS: <span id="fpsCounter">60</span></span>
+                        </div>
+                    </div>
+                    
+                    <div id="carCanvas" class="neo-canvas">
+                        <div class="canvas-overlay">
+                            <div class="loading-indicator" id="modelLoading">
+                                <div class="loading-spinner"></div>
+                                <div class="loading-text">LOADING 3D MODEL</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="canvas-controls">
+                        <div class="control-group">
+                            <button id="rotateBtn" class="control-btn neo-btn">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>AUTO ROTATE</span>
+
+<div class="btn-indicator"></div>
+                            </button>
+                            <button id="resetViewBtn" class="control-btn neo-btn">
+                                <i class="fas fa-crosshairs"></i>
+                                <span>RESET VIEW</span>
+                            </button>
+                        </div>
+                        
+                        <div class="control-group">
+                            <button id="engineSoundBtn" class="control-btn neo-btn">
+                                <i class="fas fa-play"></i>
+                                <span>IGNITION</span>
+                            </button>
+                            <button id="engineRevBtn" class="control-btn neo-btn">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>REV ENGINE</span>
+                            </button>
+                        </div>
+                        
+                        <div class="sound-controls neo-glass">
+                            <div class="volume-control">
+                                <label for="volumeSlider">
+                                    <i class="fas fa-volume-up"></i>
+                                    <span>IMMERSION LEVEL</span>
+                                </label>
+                                <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                                <div class="volume-value">70%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="view-presets">
+                        <button class="preset-btn active" data-view="front">
+                            <i class="fas fa-car-front"></i>
+                            <span>FRONT</span>
+                        </button>
+                        <button class="preset-btn" data-view="side">
+                            <i class="fas fa-car-side"></i>
+                            <span>SIDE</span>
+                        </button>
+                        <button class="preset-btn" data-view="back">
+                            <i class="fas fa-car-rear"></i>
+                            <span>REAR</span>
+                        </button>
+                        <button class="preset-btn" data-view="top">
+                            <i class="fas fa-car-top"></i>
+                            <span>AERIAL</span>
+                        </button>
+                        <button class="preset-btn" data-view="interior">
+                            <i class="fas fa-chair"></i>
+                            <span>COCKPIT</span>
+                        </button>
+                    </div>
+                </div>
+                
+                
+    <!-- Models Section (Enhanced) -->
     <section class="models section-padding" id="models">
         <div class="container">
             <div class="section-header">
@@ -373,7 +471,7 @@
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>2.6s 0-60</span>
                             </div>
-                            <div class="spec">
+<div class="spec">
                                 <i class="fas fa-horse-head"></i>
                                 <span>640 HP</span>
                             </div>
@@ -429,7 +527,7 @@
                                 <i class="fas fa-gas-pump"></i>
                                 <span>TURBO V8</span>
 
-                            </div>
+</div>
                         </div>
                         <div class="model-price">$130,000</div>
                     </div>
@@ -462,7 +560,7 @@
         </div>
     </section>
 
-    
+
     <!-- Enhanced Footer -->
     <footer class="footer neo-footer" id="contact">
         <div class="footer-grid">
@@ -522,7 +620,7 @@
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
-                        <span>ACCESS@PORSCHE-EXCLUSIVE.COM</span>
+<span>ACCESS@PORSCHE-EXCLUSIVE.COM</span>
                     </div>
                 </div>
             </div>
@@ -564,4 +662,4 @@
 
 </body>
 </html>
-<script src="script.js"></script>
+ <script src="script.js"></script>
