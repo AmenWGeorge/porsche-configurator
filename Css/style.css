@@ -1356,6 +1356,7 @@ body.light-mode .theme-slider {
 #volumeSlider {
     flex: 1;
     height: 6px;
+    appearance: none;
     -webkit-appearance: none;
     background: linear-gradient(to right, var(--cyber-red), var(--cyber-blue));
     border-radius: 3px;
@@ -1852,6 +1853,7 @@ body.light-mode .theme-slider {
 #wheelSize {
     flex: 1;
     height: 6px;
+    appearance: none;
     -webkit-appearance: none;
     background: linear-gradient(to right, var(--cyber-red), var(--cyber-blue));
     border-radius: 3px;
