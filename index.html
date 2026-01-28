@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Porsche Configurator</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Porsche Exclusive Modern Customization Experience">
+    <title>Porsche Exclusive | Neo Luxury Customization</title>
     
-    <!-- Link to External Stylesheet -->
-    <link rel="stylesheet" href="Css/style.css">
-
-
+    <!-- Link to EXTERNAL CSS file -->
+    <link rel="stylesheet" href="style.css">
+    
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
@@ -16,7 +17,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -87,9 +87,7 @@
                         <input type="text" id="regUsername" name="regUsername" required 
                                placeholder="ENTER FULL NAME">
                         <div class="input-line"></div>
-
-
-</div>
+                    </div>
                     <div class="form-group">
                         <div class="input-label">
                             <i class="fas fa-envelope"></i>
@@ -136,7 +134,7 @@
         </div>
     </div>
 
-<!-- Header Navigation -->
+    <!-- Navigation (Enhanced) -->
     <header class="header neo-header">
         <div class="container">
             <nav class="navbar">
@@ -208,7 +206,7 @@
         </div>
     </header>
 
-<!-- Hero Section (Enhanced) -->
+    <!-- Hero Section (Enhanced) -->
     <section class="hero neo-hero" id="home">
         <div class="hero-bg">
             <canvas id="heroCanvas"></canvas>
@@ -253,8 +251,6 @@
                         </div>
                         <div class="stat-content">
                             <div class="stat-value">∞</div>
-
-
                             <div class="stat-label">CONFIGURATIONS</div>
                         </div>
                     </div>
@@ -298,7 +294,7 @@
         </div>
     </section>
 
-<!-- Enhanced Stats Counter -->
+    <!-- Enhanced Stats Counter -->
     <section class="stats-counter">
         <div class="container">
             <div class="stats-grid">
@@ -346,7 +342,7 @@
         </div>
     </section>
 
-    <!-- 3D Car Visualization -->
+    <!-- 3D Car Visualization (Enhanced) -->
     <section class="car-visualization section-padding" id="customize">
         <div class="container">
             <div class="section-header">
@@ -387,8 +383,7 @@
                             <button id="rotateBtn" class="control-btn neo-btn">
                                 <i class="fas fa-sync-alt"></i>
                                 <span>AUTO ROTATE</span>
-
-<div class="btn-indicator"></div>
+                                <div class="btn-indicator"></div>
                             </button>
                             <button id="resetViewBtn" class="control-btn neo-btn">
                                 <i class="fas fa-crosshairs"></i>
@@ -526,7 +521,7 @@
                                 </div>
                             </div>
                         </div>
-                    
+                        
                         <!-- Wheels Section -->
                         <div class="panel-section">
                             <div class="section-header">
@@ -604,9 +599,8 @@
                                 </div>
                             </div>
                         </div>
-     
                         
- <!-- Model Selector -->
+                        <!-- Model Selector -->
                         <div class="panel-section">
                             <div class="section-header">
                                 <i class="fas fa-car"></i>
@@ -787,7 +781,7 @@
             </div>
         </div>
     </section>
-                
+
     <!-- Models Section (Enhanced) -->
     <section class="models section-padding" id="models">
         <div class="container">
@@ -815,7 +809,7 @@
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>2.6s 0-60</span>
                             </div>
-<div class="spec">
+                            <div class="spec">
                                 <i class="fas fa-horse-head"></i>
                                 <span>640 HP</span>
                             </div>
@@ -870,8 +864,7 @@
                             <div class="spec">
                                 <i class="fas fa-gas-pump"></i>
                                 <span>TURBO V8</span>
-
-</div>
+                            </div>
                         </div>
                         <div class="model-price">$130,000</div>
                     </div>
@@ -903,7 +896,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- Enhanced Footer -->
     <footer class="footer neo-footer" id="contact">
@@ -964,7 +956,7 @@
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
-<span>ACCESS@PORSCHE-EXCLUSIVE.COM</span>
+                        <span>ACCESS@PORSCHE-EXCLUSIVE.COM</span>
                     </div>
                 </div>
             </div>
@@ -1004,6 +996,198 @@
         </div>
     </footer>
 
+    <!-- Purchase Modal (Enhanced) -->
+    <!-- Purchase Modal (Enhanced) -->
+<div id="purchaseModal" class="modal neo-modal">
+    <div class="modal-content purchase-modal">
+        <div class="modal-header">
+            <div class="modal-logo">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h2>ACQUISITION CONFIRMATION</h2>
+            <span class="close-purchase-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="purchase-summary neo-glass" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--cyber-blue); font-family: var(--font-heading);">
+                    <i class="fas fa-file-invoice"></i> ORDER SUMMARY
+                </h3>
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>VEHICLE</span>
+                        <span id="purchaseModel">911 TURBO S</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>COLOR</span>
+                        <span id="purchaseColor">CARBON BLACK GLOSS</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>WHEELS</span>
+                        <span id="purchaseWheels">CLASSIC ALLOY 21"</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>FINISH</span>
+                        <span id="purchaseFinish">GLOSS FINISH</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>TOTAL</span>
+                        <span id="purchaseTotal">$205,000</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="checkoutForm" class="neo-form">
+                <h3 style="margin-bottom: 1.5rem; color: var(--cyber-blue); font-family: var(--font-heading);">
+                    <i class="fas fa-user-shield"></i> PERSONAL DETAILS
+                </h3>
+                
+                <div class="form-group">
+                    <div class="input-label">
+                        <i class="fas fa-user"></i>
+                        <span>FULL NAME</span>
+                    </div>
+                    <input type="text" id="checkoutName" name="full_name" required 
+                           placeholder="ENTER YOUR FULL NAME">
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-label">
+                        <i class="fas fa-envelope"></i>
+                        <span>EMAIL ADDRESS</span>
+                    </div>
+                    <input type="email" id="checkoutEmail" name="email" required 
+                           placeholder="ENTER YOUR EMAIL">
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-label">
+                        <i class="fas fa-phone"></i>
+                        <span>PHONE NUMBER</span>
+                    </div>
+                    <input type="tel" id="checkoutPhone" name="phone" required 
+                           placeholder="ENTER YOUR PHONE">
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-label">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>DELIVERY ADDRESS</span>
+                    </div>
+                    <textarea id="checkoutAddress" name="address" rows="3" required 
+                              placeholder="ENTER COMPLETE DELIVERY ADDRESS"></textarea>
+                    <div class="input-line"></div>
+                </div>
+                
+                <h3 style="margin: 2rem 0 1.5rem; color: var(--cyber-blue); font-family: var(--font-heading);">
+                    <i class="fas fa-credit-card"></i> PAYMENT INFORMATION
+                </h3>
+                
+                <div class="form-group">
+                    <div class="input-label">
+                        <i class="fas fa-credit-card"></i>
+                        <span>CARD NUMBER</span>
+                    </div>
+                    <input type="text" id="cardNumber" name="card_number" required 
+                           placeholder="1234 5678 9012 3456" maxlength="19">
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-calendar"></i>
+                            <span>EXPIRY DATE</span>
+                        </div>
+                        <input type="text" id="cardExpiry" name="card_expiry" required 
+                               placeholder="MM/YY" maxlength="5">
+                        <div class="input-line"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-label">
+                            <i class="fas fa-lock"></i>
+                            <span>CVV</span>
+                        </div>
+                        <input type="password" id="cardCvv" name="card_cvv" required 
+                               placeholder="123" maxlength="4">
+                        <div class="input-line"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-label">
+                        <i class="fas fa-user-circle"></i>
+                        <span>CARDHOLDER NAME</span>
+                    </div>
+                    <input type="text" id="cardName" name="card_name" required 
+                           placeholder="NAME ON CARD">
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="terms-agreement" style="margin: 2rem 0;">
+                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <input type="checkbox" id="termsAgree" name="terms_agree" required 
+                               style="width: 20px; height: 20px; margin-top: 0.25rem;">
+                        <label for="termsAgree" style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">
+                            I agree to the <a href="#" style="color: var(--cyber-blue);">Terms of Service</a> 
+                            and <a href="#" style="color: var(--cyber-blue);">Privacy Policy</a>. 
+                            I understand this is a demo purchase simulation.
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="purchaseMessage" class="neo-message" style="display: none;"></div>
+                
+                <button type="submit" class="btn-purchase neo-btn" style="width: 100%; margin-top: 1rem;">
+                    <span class="btn-glow"></span>
+                    <i class="fas fa-lock"></i>
+                    <span class="btn-text">CONFIRM PURCHASE</span>
+                    <div class="btn-pulse"></div>
+                </button>
+                
+                <div class="demo-note" style="text-align: center; margin-top: 1.5rem; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;">
+                    <i class="fas fa-info-circle"></i>
+                    <span>This is a demo transaction. No real payment will be processed.</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal neo-modal">
+        <div class="modal-content profile-modal">
+            <div class="modal-header">
+                <div class="modal-logo">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <h2>USER PROFILE MATRIX</h2>
+                <span class="close-profile-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Enhanced profile content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="engineIdleSound" preload="auto" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-sports-car-engine-idle-1606.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="engineRevSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-car-revving-engine-1564.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="uiHoverSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="uiClickSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-click-button-1127.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Link to EXTERNAL JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
- <script src="script.js"></script>
