@@ -427,6 +427,7 @@ async function loadCarModel(modelType) {
     } catch (error) {
         console.error(`❌ Error loading model ${modelType}:`, error);
         showLoadingIndicator(false, 'Failed to load model');
+        createFallbackModel();
     } finally {
         appState.threejs.isLoading = false;
     }
@@ -483,3 +484,572 @@ function configureModel(model) {
     model.rotation.y = Math.PI;
 }
 
+
+// Create fallback primitive model if 3D file fails to load
+function createFallbackModel() {
+    console.log('Creating fallback model...');
+    
+    const group = new THREE.Group();
+    
+    // Create simplified car body
+    const bodyGeometry = new THREE.BoxGeometry(3, 1, 1.5);
+    const bodyMaterial = new THREE.MeshPhysicalMaterial({ 
+        color: appState.config.color,
+        roughness: 0.05,
+        metalness: 0.9,
+        clearcoat: 1.0
+    });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.castShadow = true;
+    body.userData = { isBody: true };
+    group.add(body);
+    
+    // Create wheel cylinders
+    const wheelGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.2, 16);
+    const wheelMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x222222,
+        roughness: 0.7,
+        metalness: 0.8
+    });
+    
+    // Define wheel positions (front-left, front-right, rear-left, rear-right)
+    const wheelPositions = [
+        { x: -1.2, y: 0.3, z: 0.8 },
+        { x: 1.2, y: 0.3, z: 0.8 },
+        { x: -1.2, y: 0.3, z: -0.8 },
+        { x: 1.2, y: 0.3, z: -0.8 }
+    ];
+    
+    // Create and position each wheel
+    wheelPositions.forEach(pos => {
+        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(pos.x, pos.y, pos.z);
+        wheel.castShadow = true;
+        wheel.userData = { isWheel: true };
+        wheel.userData.originalMaterial = {
+            color: wheelMaterial.color.clone(),
+            roughness: wheelMaterial.roughness,
+            metalness: wheelMaterial.metalness
+        };
+        group.add(wheel);
+    });
+    
+    // Position fallback model
+    group.position.y = 0.3;
+    
+    appState.threejs.model = group;
+    appState.threejs.scene.add(appState.threejs.model);
+}
+
+// Apply current customization to 3D model
+function applyCustomization() {
+    if (!appState.threejs.model) return;
+    
+    // Traverse all mesh objects in model
+    appState.threejs.model.traverse((child) => {
+        if (child.isMesh && child.material && child.userData) {
+            // Apply customization to body parts
+            if (child.userData.isBody) {
+                const color = new THREE.Color(appState.config.color);
+                child.material.color.copy(color);
+                
+                // Apply material properties based on finish selection
+                switch (appState.config.material) {
+                    case "metallic":
+                    child.material.roughness = 0.2;
+                    child.material.metalness = 1.0;
+                    child.material.clearcoat = 1.0;
+                    child.material.clearcoatRoughness = 0.1;
+                    break;
+
+                    case "matte":
+                        child.material.roughness = 0.9;
+                        child.material.metalness = 0.1;
+                        child.material.clearcoat = 0.5;
+                        child.material.clearcoatRoughness = 0.5;
+                        break;
+
+                    case "pearl":
+                        child.material.roughness = 0.15;
+                        child.material.metalness = 0.6;
+                        child.material.clearcoat = 1.0;
+                        child.material.clearcoatRoughness = 0.08;
+                        break; 
+
+                    case "chrome":
+                        child.material.roughness = 0.02;
+                        child.material.metalness = 1.0;
+                        child.material.clearcoat = 0.0;
+                        child.material.clearcoatRoughness = 0.0;
+                        break;
+
+                    default: // glossy
+                        child.material.roughness = 0.05;
+                        child.material.metalness = 0.9;
+                        child.material.clearcoat = 1.0;
+                        child.material.clearcoatRoughness = 0.03;
+}
+                
+                child.material.needsUpdate = true;
+            }
+            
+            // Apply customization to wheel parts
+            if (child.userData.isWheel) {
+                // Determine wheel color
+                let wheelColor;
+                switch(appState.config.wheelColor) {
+                    case "black":
+                        wheelColor = new THREE.Color(0x0a0a0a);
+                        break;
+                    case "bronze":
+                        wheelColor = new THREE.Color(0xcd7f32);
+                        break;
+                    case "gold":
+                        wheelColor = new THREE.Color(0xffd700);
+                        break;
+                    default: // silver
+                        wheelColor = new THREE.Color(0xc0c0c0);
+                }
+                
+                child.material.color.copy(wheelColor);
+                
+                // Apply wheel type material properties
+                switch(appState.config.wheels) {
+                    case "sport":
+                        child.material.roughness = 0.2;
+                        child.material.metalness = 0.9;
+                        break;
+                    case "premium":
+                        child.material.roughness = 0.1;
+                        child.material.metalness = 1.0;
+                        break;
+                    case "racing":
+                        child.material.roughness = 0.05;
+                        child.material.metalness = 1.0;
+                        break;
+                    default: // classic
+                        child.material.roughness = 0.3;
+                        child.material.metalness = 0.8;
+                }
+                
+                child.material.needsUpdate = true;
+            }
+        }
+    });
+    
+    // Update UI display
+    updateCustomizationDisplay();
+}
+
+// Update model statistics display
+function updateModelStats() {
+    if (!appState.threejs.model) return;
+
+    let vertices = 0;
+    let triangles = 0;
+
+    appState.threejs.model.traverse((child) => {
+        if (child.isMesh && child.geometry) {
+            const geometry = child.geometry;
+
+            // Vertices
+            vertices += geometry.attributes.position.count;
+
+            // Triangles
+            if (geometry.index) {
+                triangles += geometry.index.count / 3;
+            } else {
+                triangles += geometry.attributes.position.count / 3;
+            }
+        }
+    });
+
+    // Store stats
+    appState.ui.stats.vertices = vertices;
+    appState.ui.stats.triangles = Math.round(triangles);
+    appState.ui.stats.polygons = Math.round(triangles / 1000);
+
+    // Update UI
+    if (DOM.polyCount) {
+        DOM.polyCount.textContent = `${appState.ui.stats.polygons}K`;
+    }
+}
+
+
+// Show or hide loading indicator overlay
+function showLoadingIndicator(show, message = 'Loading 3D Model') {
+    const overlay = document.querySelector('.canvas-overlay');
+    const loadingText = document.querySelector('.loading-text');
+    
+    if (!overlay) return;
+    
+    if (show) {
+        overlay.style.display = 'flex';
+        if (loadingText && message) {
+            loadingText.textContent = message;
+        }
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+// Properly dispose of 3D model resources to prevent memory leaks
+function disposeModel(model) {
+    model.traverse((child) => {
+        if (child.isMesh) {
+            // Dispose geometry
+            if (child.geometry) {
+                child.geometry.dispose();
+            }
+            
+            // Dispose materials
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(material => material.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        }
+    });
+}
+
+// ===== ANIMATION LOOP =====
+let clock = new THREE.Clock();
+let delta = 0;
+let frameCount = 0;
+let lastTime = performance.now();
+
+// Main animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Calculate time delta
+    delta = clock.getDelta();
+    frameCount++;
+    
+    // Update camera light position to follow camera
+    if (appState.threejs.lights.length > 0) {
+        const cameraLight = appState.threejs.lights[appState.threejs.lights.length - 1];
+        cameraLight.position.copy(appState.threejs.camera.position);
+    }
+    
+    // Auto-rotate model if enabled
+    if (appState.threejs.isRotating && appState.threejs.model) {
+        appState.threejs.model.rotation.y += 0.005;
+    }
+    
+    // Update orbit controls
+    if (appState.threejs.controls) {
+        appState.threejs.controls.update();
+    }
+    
+    // Render 3D scene
+    if (appState.threejs.renderer && appState.threejs.scene && appState.threejs.camera) {
+        appState.threejs.renderer.render(appState.threejs.scene, appState.threejs.camera);
+    }
+}
+
+// Start FPS counter for performance monitoring
+function startFPSCounter() {
+    setInterval(() => {
+        const now = performance.now();
+        const fps = Math.round((frameCount * 1000) / (now - lastTime));
+        
+        // Update FPS in state
+        appState.ui.stats.fps = fps;
+        lastTime = now;
+        frameCount = 0;
+        
+        // Update DOM display with color coding
+        if (DOM.fpsCounter) {
+            DOM.fpsCounter.textContent = fps;
+            
+            // Color code based on FPS value
+            if (fps < 30) {
+                DOM.fpsCounter.style.color = '#ff003c';
+            } else if (fps < 50) {
+                DOM.fpsCounter.style.color = '#ffdd00';
+            } else {
+                DOM.fpsCounter.style.color = '#00ff9d';
+            }
+        }
+    }, 1000);
+}
+
+// ===== WINDOW RESIZE =====
+function onWindowResize() {
+    const canvas = document.querySelector('#carCanvas');
+    if (!canvas || !appState.threejs.camera || !appState.threejs.renderer) return;
+    
+    // Update camera aspect ratio
+    appState.threejs.camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    appState.threejs.camera.updateProjectionMatrix();
+    
+    // Update renderer size
+    appState.threejs.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+}
+
+// ===== AUDIO MANAGEMENT =====
+function initAudio() {
+    if (!DOM.engineIdleSound || !DOM.engineRevSound) {
+        console.warn('Audio elements not found');
+        return;
+    }
+    
+    // Set initial volume levels
+    DOM.engineIdleSound.volume = appState.audio.volume;
+    DOM.engineRevSound.volume = appState.audio.volume;
+    
+    // Initialize Web Audio API context if available
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        appState.audio.context = new AudioContext();
+    } catch (e) {
+        console.warn('Web Audio API not supported');
+    }
+    
+    // Enable audio on first user interaction (browser policy)
+    document.addEventListener('click', function enableAudio() {
+        if (appState.audio.context && appState.audio.context.state === 'suspended') {
+            appState.audio.context.resume();
+        }
+        document.removeEventListener('click', enableAudio);
+    }, { once: true });
+}
+
+// Toggle engine idle sound playback
+function playEngineIdle() {
+    // Toggle behavior: stop if currently playing
+    if (appState.audio.isPlaying) {
+        stopEngineIdle();
+        return;
+    }
+    
+    try {
+        // Play engine idle sound from beginning
+        DOM.engineIdleSound.currentTime = 0;
+        DOM.engineIdleSound.play();
+        appState.audio.isPlaying = true;
+        
+        // Update button state
+        if (DOM.engineSoundBtn) {
+            DOM.engineSoundBtn.innerHTML = '<i class="fas fa-stop"></i><span>STOP ENGINE</span>';
+            DOM.engineSoundBtn.classList.add('active');
+        }
+    } catch (error) {
+        console.warn('Audio playback failed:', error);
+        showNotification('Click anywhere to enable audio, then try again', 'warning');
+    }
+}
+
+// Stop engine idle sound
+function stopEngineIdle() {
+    DOM.engineIdleSound.pause();
+    DOM.engineIdleSound.currentTime = 0;
+    appState.audio.isPlaying = false;
+    
+    // Update button state
+    if (DOM.engineSoundBtn) {
+        DOM.engineSoundBtn.innerHTML = '<i class="fas fa-play"></i><span>IGNITION</span>';
+        DOM.engineSoundBtn.classList.remove('active');
+    }
+}
+
+// Play engine revving sound
+function playEngineRev() {
+    const wasPlaying = appState.audio.isPlaying;
+    
+    // Pause idle sound temporarily
+    if (wasPlaying) {
+        DOM.engineIdleSound.pause();
+    }
+    
+    try {
+        // Play rev sound
+        DOM.engineRevSound.currentTime = 0;
+        DOM.engineRevSound.play();
+        
+        // Visual feedback for rev button
+        if (DOM.engineRevBtn) {
+            DOM.engineRevBtn.classList.add('active');
+            setTimeout(() => {
+                DOM.engineRevBtn.classList.remove('active');
+            }, 1000);
+        }
+        
+        // Resume idle sound when rev ends
+        DOM.engineRevSound.onended = () => {
+            if (wasPlaying) {
+                DOM.engineIdleSound.play();
+            }
+        };
+    } catch (error) {
+        console.warn('Rev sound failed:', error);
+    }
+}
+
+// ===== UI UPDATES =====
+function updateCustomizationDisplay() {
+    // Update color display with friendly names
+    if (DOM.selectedColor) {
+        const colorNames = {
+            "#0a0a0a": "CARBON BLACK",
+            "#c00": "GUARDS RED",
+            "#06c": "GENTIAN BLUE",
+            "#0a5": "MIAMI BLUE"
+        };
+        
+        DOM.selectedColor.textContent = `${colorNames[appState.config.color] || 'CUSTOM'} ${appState.config.material.toUpperCase()}`;
+    }
+    
+    // Update wheels display
+    if (DOM.selectedWheels) {
+        const wheelNames = {
+            "classic": "CLASSIC ALLOY",
+            "sport": "SPORT DESIGN",
+            "premium": "PREMIUM ALLOY",
+            "racing": "RACING PACKAGE"
+        };
+        
+        DOM.selectedWheels.textContent = `${wheelNames[appState.config.wheels]} ${appState.config.wheelColor.toUpperCase()}`;
+    }
+    
+    // Update material display
+    if (DOM.selectedMaterial) {
+        DOM.selectedMaterial.textContent = `${appState.config.material.toUpperCase()} FINISH`;
+    }
+    
+    // Update model display
+    if (DOM.selectedModel) {
+        const modelNames = {
+            "911": "911 TURBO S",
+            "taycan": "TAYCAN TURBO",
+            "cayenne": "CAYENNE TURBO",
+            "panamera": "PANAMERA 4S"
+        };
+        
+        DOM.selectedModel.textContent = modelNames[appState.config.model];
+    }
+    
+    // Update price display
+    updatePrice();
+}
+
+// Calculate and update total price based on configuration
+function updatePrice() {
+    // Base prices for each model
+    const modelPrices = {
+        "911": 205000,
+        "taycan": 150000,
+        "cayenne": 130000,
+        "panamera": 105000
+    };
+    
+    // Wheel upgrade prices
+    const wheelPrices = {
+        "classic": 0,
+        "sport": 2500,
+        "premium": 4500,
+        "racing": 7000
+    };
+    
+    // Material/finish upgrade prices
+    const materialPrices = {
+        "glossy": 0,
+        "metallic": 2000,
+        "matte": 5000
+    };
+    
+    // Calculate total price
+    const basePrice = modelPrices[appState.config.model] || 205000;
+    const wheelPrice = wheelPrices[appState.config.wheels] || 0;
+    const materialPrice = materialPrices[appState.config.material] || 0;
+    const total = basePrice + wheelPrice + materialPrice;
+    
+    // Update state and DOM
+    appState.config.price = total;
+    
+    if (DOM.totalPrice) {
+        DOM.totalPrice.textContent = `$${total.toLocaleString()}`;
+    }
+}
+
+// ===== MODAL FUNCTIONS (FIXED) =====
+function openModal(modal) {
+    if (!modal) {
+        console.error('Modal element not found!');
+        return;
+    }
+    
+    console.log('Opening modal:', modal.id);
+    
+    // Force modal display with important priority
+    modal.style.cssText = 'display: flex !important;';
+    
+    // Add show class for CSS transitions
+    modal.classList.add('show');
+    
+    // Prevent body scrolling while modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Animate modal appearance with GSAP
+    if (modal.querySelector('.modal-content')) {
+        gsap.fromTo(modal.querySelector('.modal-content'), 
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.7)' }
+        );
+    }
+}
+
+function closeModal(modal) {
+    if (!modal) return;
+    
+    console.log('Closing modal:', modal.id);
+    
+    // Animate modal disappearance
+    if (modal.querySelector('.modal-content')) {
+        gsap.to(modal.querySelector('.modal-content'), {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.2,
+            ease: 'power3.in',
+            onComplete: () => {
+                // Hide modal after animation completes
+                modal.style.cssText = 'display: none !important;';
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    } else {
+        // Hide modal immediately if no content element
+        modal.style.cssText = 'display: none !important;';
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+// ===== PURCHASE MODAL FUNCTIONS (ADDED) =====
+function updatePurchaseSummary() {
+    // Update purchase modal with current configuration details
+    const purchaseModel = document.getElementById('purchaseModel');
+    const purchaseColor = document.getElementById('purchaseColor');
+    const purchaseWheels = document.getElementById('purchaseWheels');
+    const purchaseFinish = document.getElementById('purchaseFinish');
+    const purchaseTotal = document.getElementById('purchaseTotal');
+    
+    if (purchaseModel) purchaseModel.textContent = DOM.selectedModel?.textContent || '';
+    if (purchaseColor) purchaseColor.textContent = DOM.selectedColor?.textContent || '';
+    if (purchaseWheels) purchaseWheels.textContent = DOM.selectedWheels?.textContent || '';
+    if (purchaseFinish) purchaseFinish.textContent = DOM.selectedMaterial?.textContent || '';
+    if (purchaseTotal) purchaseTotal.textContent = DOM.totalPrice?.textContent || '';
+    
+    // Auto-fill email field if user is logged in
+    if (appState.user && appState.user.email) {
+        const emailField = document.getElementById('checkoutEmail');
+        if (emailField) {
+            emailField.value = appState.user.email;
+        }
+    }
+}
