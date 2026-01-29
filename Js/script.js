@@ -1053,3 +1053,783 @@ function updatePurchaseSummary() {
         }
     }
 }
+
+
+// ===== EVENT LISTENERS (FIXED) =====
+function initEventListeners() {
+    // Mobile menu toggle
+    if (DOM.hamburger && DOM.navLinks) {
+        DOM.hamburger.addEventListener('click', () => {
+            DOM.hamburger.classList.toggle('active');
+            DOM.navLinks.classList.toggle('active');
+            document.body.style.overflow = DOM.navLinks.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        // Close menu when clicking navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                DOM.hamburger.classList.remove('active');
+                DOM.navLinks.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
+    
+    // Theme toggle
+    if (DOM.themeToggle) {
+        DOM.themeToggle.addEventListener('click', () => {
+            appState.ui.theme = appState.ui.theme === 'dark' ? 'light' : 'dark';
+            updateTheme();
+        });
+    }
+    
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        const header = document.querySelector('.header');
+        if (header) {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+    });
+    
+    // Login modal - FIXED
+    if (DOM.loginBtn) {
+        DOM.loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Login button clicked');
+            openModal(DOM.loginModal);
+        });
+    }
+    
+    // Close modal buttons - FIXED
+    if (DOM.closeModal) {
+        DOM.closeModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close login modal clicked');
+            closeModal(DOM.loginModal);
+        });
+    }
+    
+    if (DOM.closePurchaseModal) {
+        DOM.closePurchaseModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close purchase modal clicked');
+            closeModal(DOM.purchaseModal);
+        });
+    }
+    
+    if (DOM.closeProfileModal) {
+        DOM.closeProfileModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close profile modal clicked');
+            closeModal(DOM.profileModal);
+        });
+    }
+    
+    // Close modals on outside click - FIXED
+    window.addEventListener('click', (e) => {
+        // Only close if clicking on the modal background (not the content)
+        if (e.target === DOM.loginModal) {
+            closeModal(DOM.loginModal);
+        } else if (e.target === DOM.purchaseModal) {
+            closeModal(DOM.purchaseModal);
+        } else if (e.target === DOM.profileModal) {
+            closeModal(DOM.profileModal);
+        }
+    });
+    
+    // Form toggling between login and registration
+    const showRegister = document.getElementById('showRegister');
+    const showLogin = document.getElementById('showLogin');
+    
+    if (showRegister) {
+        showRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (DOM.loginForm) DOM.loginForm.style.display = 'none';
+            if (DOM.registerForm) DOM.registerForm.style.display = 'block';
+        });
+    }
+    
+    if (showLogin) {
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (DOM.registerForm) DOM.registerForm.style.display = 'none';
+            if (DOM.loginForm) DOM.loginForm.style.display = 'block';
+        });
+    }
+    
+    // Color preset selection
+    if (DOM.colorPresets) {
+        DOM.colorPresets.forEach(preset => {
+            preset.addEventListener('click', () => {
+                const color = preset.getAttribute('data-color');
+                const finish = preset.getAttribute('data-finish');
+                
+                // Update active state
+                DOM.colorPresets.forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+                
+                // Update configuration
+                appState.config.color = color;
+                appState.config.material = finish;
+                
+                // Apply to 3D model
+                applyCustomization();
+            });
+        });
+    }
+    
+    // Color picker input
+    if (DOM.colorPicker) {
+        DOM.colorPicker.addEventListener('input', (e) => {
+            appState.config.color = e.target.value;
+            applyCustomization();
+            
+            // Remove active state from presets when using custom color
+            if (DOM.colorPresets) {
+                DOM.colorPresets.forEach(p => p.classList.remove('active'));
+            }
+        });
+    }
+    
+    // Finish material selection
+    if (DOM.finishButtons) {
+        DOM.finishButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const finish = button.getAttribute('data-finish');
+                
+                // Update active state
+                DOM.finishButtons.forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update configuration
+                appState.config.material = finish;
+                
+                // Apply to 3D model
+                applyCustomization();
+            });
+        });
+    }
+    
+    // Wheel style selection
+    if (DOM.wheelPresets) {
+        DOM.wheelPresets.forEach(preset => {
+            preset.addEventListener('click', () => {
+                const wheels = preset.getAttribute('data-wheel');
+                
+                // Update active state
+                DOM.wheelPresets.forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+                
+                // Update configuration
+                appState.config.wheels = wheels;
+                
+                // Apply to 3D model
+                applyCustomization();
+            });
+        });
+    }
+    
+    // Wheel color selection
+    if (DOM.wheelColorOptions) {
+        DOM.wheelColorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.getAttribute('data-color');
+                
+                // Update active state
+                DOM.wheelColorOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                
+                // Update configuration
+                appState.config.wheelColor = color;
+                
+                // Apply to 3D model
+                applyCustomization();
+            });
+        });
+    }
+    
+    // Wheel size slider
+    if (DOM.wheelSizeSlider) {
+        DOM.wheelSizeSlider.addEventListener('input', (e) => {
+            const size = e.target.value;
+            const sizeValue = document.querySelector('.size-value');
+            
+            if (sizeValue) {
+                sizeValue.textContent = `${size}"`;
+            }
+        });
+    }
+    
+    // Model selection - FIXED: Add event listeners to all model cards
+    document.querySelectorAll('.model-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const model = card.getAttribute('data-model');
+            
+            // Update active state
+            document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            
+            // Load the selected model
+            loadCarModel(model);
+        });
+    });
+    
+    // 3D viewer controls
+    if (DOM.rotateBtn) {
+        DOM.rotateBtn.addEventListener('click', () => {
+            appState.threejs.isRotating = !appState.threejs.isRotating;
+            
+            // Update button text and state
+            if (appState.threejs.isRotating) {
+                DOM.rotateBtn.innerHTML = '<i class="fas fa-sync-alt"></i><span>AUTO ROTATE</span>';
+                DOM.rotateBtn.classList.add('active');
+            } else {
+                DOM.rotateBtn.innerHTML = '<i class="fas fa-pause"></i><span>AUTO ROTATE</span>';
+                DOM.rotateBtn.classList.remove('active');
+            }
+        });
+    }
+    
+    // Reset view button
+    if (DOM.resetViewBtn) {
+        DOM.resetViewBtn.addEventListener('click', () => {
+            if (appState.threejs.controls) {
+                appState.threejs.controls.reset();
+                appState.threejs.camera.position.set(3, 2, 5);
+                appState.threejs.controls.target.set(0, 0.5, 0);
+            }
+        });
+    }
+    
+    // Engine sound buttons
+    if (DOM.engineSoundBtn) {
+        DOM.engineSoundBtn.addEventListener('click', playEngineIdle);
+    }
+    
+    if (DOM.engineRevBtn) {
+        DOM.engineRevBtn.addEventListener('click', playEngineRev);
+    }
+    
+    // Volume control slider
+    if (DOM.volumeSlider && DOM.volumeValue) {
+        DOM.volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            appState.audio.volume = volume;
+            
+            // Update audio elements
+            DOM.engineIdleSound.volume = volume;
+            DOM.engineRevSound.volume = volume;
+            
+            // Update display
+            DOM.volumeValue.textContent = `${e.target.value}%`;
+        });
+    }
+    
+    // Camera view presets
+    if (DOM.viewPresets) {
+        DOM.viewPresets.forEach(preset => {
+            preset.addEventListener('click', () => {
+                const view = preset.getAttribute('data-view');
+                
+                // Update active state
+                DOM.viewPresets.forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+                
+                // Set camera position based on selected view
+                if (appState.threejs.camera) {
+                    switch(view) {
+                        case "front":
+                            appState.threejs.camera.position.set(0, 1, 5);
+                            break;
+                        case "side":
+                            appState.threejs.camera.position.set(5, 1, 0);
+                            break;
+                        case "back":
+                            appState.threejs.camera.position.set(0, 1, -5);
+                            break;
+                        case "top":
+                            appState.threejs.camera.position.set(0, 5, 0);
+                            appState.threejs.camera.lookAt(0, 0, 0);
+                            break;
+                        case "interior":
+                            appState.threejs.camera.position.set(0, 1, 2);
+                            break;
+                    }
+                    
+                    // Update orbit controls target
+                    if (appState.threejs.controls) {
+                        appState.threejs.controls.target.set(0, 0.5, 0);
+                        appState.threejs.controls.update();
+                    }
+                }
+            });
+        });
+    }
+    
+    // Purchase button - FIXED
+    if (DOM.purchaseBtn) {
+        DOM.purchaseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Purchase button clicked');
+            
+            // Require login for purchase
+            if (!appState.user) {
+                showNotification('Please login to make a purchase', 'warning');
+                openModal(DOM.loginModal);
+                return;
+            }
+            
+            // Open purchase modal with current configuration
+            openModal(DOM.purchaseModal);
+            updatePurchaseSummary();
+        });
+    }
+    
+    // FORM SUBMISSIONS - FIXED LOGIN HANDLER FOR NO DATABASE
+if (DOM.loginForm) {
+    DOM.loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // Show loading state
+        const submitBtn = DOM.loginForm.querySelector('.btn-login');
+        const originalText = submitBtn?.querySelector('.btn-text')?.textContent || 'LOGIN';
+        if (submitBtn) {
+            submitBtn.querySelector('.btn-text').textContent = 'PROCESSING...';
+            submitBtn.disabled = true;
+        }
+        
+        try {
+            console.log('Attempting login for:', username);
+            
+            // CHECK FOR DEMO CREDENTIALS FIRST
+            if (username === CONFIG.DEMO_USER.email && password === CONFIG.DEMO_USER.password) {
+                console.log('Demo login successful');
+                
+                // Simulate successful login without API call
+                const demoUser = {
+                    id: 999,
+                    username: 'demo_user',
+                    email: CONFIG.DEMO_USER.email,
+                    is_demo: true
+                };
+                
+                // Generate a mock session token
+                const mockToken = 'demo_token_' + Date.now();
+                localStorage.setItem('porsche_session_token', mockToken);
+                
+                showNotification('Demo login successful!', 'success');
+                closeModal(DOM.loginModal);
+                updateUserUI(demoUser);
+                
+                // Reset button state
+                if (submitBtn) {
+                    submitBtn.querySelector('.btn-text').textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+                
+                return; // Stop here for demo login
+            }
+            
+            // Only try actual API call for non-demo logins
+            const response = await fetch('php/login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            // Get response text first for debugging
+            const responseText = await response.text();
+            console.log('Raw response:', responseText);
+            
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Failed to parse response:', parseError);
+                console.error('Response text:', responseText);
+                
+                // If PHP fails, show fallback demo option
+                showNotification('Server not responding. Try demo credentials instead.', 'warning');
+                return;
+            }
+            
+            if (result.success) {
+                console.log('Login successful:', result);
+                
+                // Save session token to localStorage
+                if (result.data && result.data.session_token) {
+                    localStorage.setItem('porsche_session_token', result.data.session_token);
+                    console.log('Session token saved:', result.data.session_token);
+                }
+                
+                showNotification('Login successful!', 'success');
+                closeModal(DOM.loginModal);
+                
+                // Update user UI
+                let userData;
+                if (result.data && result.data.user) {
+                    userData = result.data.user;
+                } else {
+                    // Fallback
+                    userData = {
+                        id: result.data?.id || Date.now(),
+                        username: username.split('@')[0],
+                        email: username,
+                        is_demo: false
+                    };
+                }
+                
+                updateUserUI(userData);
+            } else {
+                console.log('Login failed:', result.message);
+                showNotification(result.message || 'Login failed', 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            
+            // If it's a network error, suggest demo login
+            if (error.message.includes('Network') || error.message.includes('Failed to fetch')) {
+                showNotification('Server unavailable. Use demo credentials: demo@porsche.com / demo123', 'warning');
+            } else {
+                showNotification(error.message || 'Network error. Please try again.', 'error');
+            }
+        } finally {
+            // Reset button state
+            if (submitBtn) {
+                submitBtn.querySelector('.btn-text').textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+    });
+}
+    
+    // REGISTRATION FORM - FIXED VERSION
+    if (DOM.registerForm) {
+        DOM.registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Client-side validation
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = DOM.registerForm.querySelector('.btn-register');
+            const originalText = submitBtn.querySelector('.btn-text').textContent;
+            submitBtn.querySelector('.btn-text').textContent = 'PROCESSING...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('php/register.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                        // Don't send confirmPassword to server
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Registration successful! Please login.', 'success');
+                    
+                    // Auto-fill login form with new credentials
+                    if (DOM.loginForm) {
+                        document.getElementById('username').value = email;
+                        document.getElementById('password').value = password;
+                    }
+                    
+                    // Switch back to login form after a delay
+                    setTimeout(() => {
+                        if (DOM.registerForm) DOM.registerForm.style.display = 'none';
+                        if (DOM.loginForm) DOM.loginForm.style.display = 'block';
+                    }, 2000);
+                } else {
+                    showNotification(result.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showNotification('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                // Reset button state
+                if (submitBtn) {
+                    submitBtn.querySelector('.btn-text').textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    }
+    
+// CHECKOUT FORM SUBMISSION - FIXED TO ACTUALLY CALL BACKEND
+if (DOM.checkoutForm) {
+    DOM.checkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Get form data - ONLY SEND WHAT purchase.php NEEDS
+        const formData = {
+            // Purchase configuration data
+            model: appState.config.model,
+            color: appState.config.color,
+            wheels: appState.config.wheels,
+            material: appState.config.material,
+            wheel_color: appState.config.wheelColor,
+            finish: appState.config.material,
+            total_price: appState.config.price,
+            
+            // User info from form (optional for purchase.php)
+            full_name: document.getElementById('checkoutName').value,
+            email: document.getElementById('checkoutEmail').value,
+            phone: document.getElementById('checkoutPhone').value,
+            
+            // Session token for user authentication
+            session_token: localStorage.getItem('porsche_session_token')
+        };
+        
+        console.log('Purchase data being sent:', formData);
+        
+        // Validate required fields for the purchase
+        const requiredFields = ['model', 'color', 'wheels', 'material', 'total_price'];
+        for (const field of requiredFields) {
+            if (!formData[field]) {
+                showNotification(`Missing required field: ${field}`, 'error');
+                return;
+            }
+        }
+        
+        // Validate email format if provided
+        if (formData.email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+        }
+        
+        // Show loading state
+        const submitBtn = DOM.checkoutForm.querySelector('.btn-purchase');
+        const originalText = submitBtn?.querySelector('.btn-text')?.textContent || 'CONFIRM PURCHASE';
+        if (submitBtn) {
+            submitBtn.querySelector('.btn-text').textContent = 'PROCESSING...';
+            submitBtn.disabled = true;
+        }
+        
+        // Show processing message
+        const purchaseMessage = document.getElementById('purchaseMessage');
+        if (purchaseMessage) {
+            purchaseMessage.textContent = 'Processing your order...';
+            purchaseMessage.className = 'neo-message';
+            purchaseMessage.style.display = 'block';
+        }
+        
+        try {
+            // ACTUAL API CALL to purchase.php
+            console.log('Calling purchase.php with data:', formData);
+            
+            const response = await fetch('php/purchase.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            console.log('Response status:', response.status);
+            
+            // Get response text first for debugging
+            const responseText = await response.text();
+            console.log('Raw response from purchase.php:', responseText);
+            
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('Failed to parse response:', parseError);
+                console.error('Response was:', responseText);
+                throw new Error('Invalid server response format');
+            }
+            
+            if (result.success) {
+                console.log('Purchase successful! Order saved to database:', result);
+                
+                // Show success notification with order number
+                const orderNumber = result.data.order_number || result.data.orderNumber;
+                showNotification(`Order #${orderNumber} confirmed!`, 'success');
+                
+                // Update purchase message
+                if (purchaseMessage) {
+                    purchaseMessage.textContent = `Order #${orderNumber} saved to database!`;
+                    purchaseMessage.className = 'neo-message success';
+                }
+                
+                // Also save to localStorage as backup/offline cache
+                const orders = JSON.parse(localStorage.getItem('porsche_orders') || '[]');
+                orders.push({
+                    order_id: orderNumber,
+                    ...formData,
+                    timestamp: new Date().toISOString(),
+                    db_id: result.data.order_id,
+                    user_id: appState.user?.id || null
+                });
+                localStorage.setItem('porsche_orders', JSON.stringify(orders));
+                
+                // Close modal after delay
+                setTimeout(() => {
+                    closeModal(DOM.purchaseModal);
+                    if (purchaseMessage) {
+                        purchaseMessage.style.display = 'none';
+                    }
+                    
+                    // Reset form
+                    DOM.checkoutForm.reset();
+                    
+                    // Show order confirmation
+                    showOrderConfirmation(orderNumber, formData);
+                }, 3000);
+                
+            } else {
+                console.log('Purchase failed:', result.message);
+                showNotification(result.message || 'Purchase failed to save to database', 'error');
+                
+                if (purchaseMessage) {
+                    purchaseMessage.textContent = result.message || 'Failed to save order to database.';
+                    purchaseMessage.className = 'neo-message error';
+                }
+            }
+        } catch (error) {
+            console.error('Purchase error:', error);
+            showNotification('Failed to process order. Please try again.', 'error');
+            
+            if (purchaseMessage) {
+                purchaseMessage.textContent = 'Network error. Please check your connection.';
+                purchaseMessage.className = 'neo-message error';
+            }
+        } finally {
+            // Reset button state
+            if (submitBtn) {
+                submitBtn.querySelector('.btn-text').textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+    });
+}
+    // Demo login button
+const demoLoginBtn = document.querySelector('.demo-hint');
+if (demoLoginBtn) {
+    demoLoginBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        if (DOM.loginForm) {
+            // Auto-fill demo credentials
+            document.getElementById('username').value = CONFIG.DEMO_USER.email;
+            document.getElementById('password').value = CONFIG.DEMO_USER.password;
+            
+            // Auto-submit after a delay
+            setTimeout(() => {
+                DOM.loginForm.dispatchEvent(new Event('submit'));
+            }, 500);
+        }
+    });
+}
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Initialize model cards event listeners after DOM is fully loaded
+    setTimeout(() => {
+        const modelCards = document.querySelectorAll('.models-grid .model-card, .model-carousel .model-card');
+        modelCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                const model = card.getAttribute('data-model');
+                
+                // Update active state
+                modelCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                
+                // Load the selected model
+                loadCarModel(model);
+                
+                // Scroll to configurator section
+                const configSection = document.getElementById('customize');
+                if (configSection) {
+                    window.scrollTo({
+                        top: configSection.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    }, 100);
+    
+    // Credit card number formatting
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(.{4})/g, '$1 ').trim();
+            e.target.value = value.substring(0, 19);
+        });
+    }
+    
+    // Card expiry date formatting
+    const cardExpiryInput = document.getElementById('cardExpiry');
+    if (cardExpiryInput) {
+        cardExpiryInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value.substring(0, 5);
+        });
+    }
+}
