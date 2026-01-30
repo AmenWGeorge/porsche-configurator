@@ -2221,3 +2221,95 @@ function animateStatsCounter() {
 
 // Initialize stats counter animation when page loads
 window.addEventListener('load', animateStatsCounter);
+
+// ===== PERFORMANCE OPTIMIZATION =====
+// Throttle function to limit execution rate
+const throttle = (func, limit) => {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+};
+
+// Debounce function to delay execution
+const debounce = (func, delay) => {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+};
+
+// Optimized resize handler with debouncing
+const optimizedResize = debounce(onWindowResize, 250);
+window.addEventListener('resize', optimizedResize);
+
+// ===== ERROR HANDLING =====
+window.addEventListener('error', (e) => {
+    console.error('Application error:', e.error);
+    
+    // Show user-friendly error message for WebGL errors
+    if (e.error.message.includes('WebGL')) {
+        showNotification('3D rendering not supported. Please try a different browser.', 'error');
+    }
+});
+
+// ===== EXPORT CONFIGURATION =====
+function exportConfiguration() {
+    const config = {
+        ...appState.config,
+        timestamp: new Date().toISOString(),
+        user: appState.user ? appState.user.id : null
+    };
+    
+    // Create JSON data string
+    const dataStr = JSON.stringify(config, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `porsche-config-${Date.now()}.json`;
+    
+    // Create temporary download link
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    showNotification('Configuration exported successfully', 'success');
+}
+
+
+// ===== IMPORT CONFIGURATION =====
+function importConfiguration(file) {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        try {
+            const config = JSON.parse(e.target.result);
+            
+            // Validate config structure
+            if (!config.model || !config.color) {
+                throw new Error('Invalid configuration file');
+            }
+            
+            // Apply configuration to app state
+            appState.config = config;
+            
+            // Load model and apply customization
+            loadCarModel(config.model);
+            
+            showNotification('Configuration imported successfully', 'success');
+        } catch (error) {
+            showNotification('Failed to import configuration', 'error');
+        }
+    };
+    
+    reader.readAsText(file);
+}
