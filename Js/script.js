@@ -2057,3 +2057,167 @@ async function handlePurchase(purchaseData) {
         }, 1500);
     });
 }
+
+
+// ===== UTILITY FUNCTIONS =====
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+        <button class="notification-close"><i class="fas fa-times"></i></button>
+    `;
+    
+    // Add to DOM
+    document.body.appendChild(notification);
+    
+    // Animate in from right side
+    gsap.from(notification, {
+        x: 300,
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power3.out'
+    });
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        gsap.to(notification, {
+            x: 300,
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power3.in',
+            onComplete: () => notification.remove()
+        });
+    }, 5000);
+    
+    // Close button handler
+    notification.querySelector('.notification-close').addEventListener('click', () => {
+        gsap.to(notification, {
+            x: 300,
+            opacity: 0,
+            duration: 0.2,
+            onComplete: () => notification.remove()
+        });
+    });
+}
+
+// Add notification styles dynamically
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: var(--shadow-heavy);
+    }
+    
+    .notification-success {
+        border-color: rgba(0, 255, 0, 0.3);
+        background: rgba(0, 255, 0, 0.1);
+    }
+    
+    .notification-error {
+        border-color: rgba(255, 0, 0, 0.3);
+        background: rgba(255, 0, 0, 0.1);
+    }
+    
+    .notification-warning {
+        border-color: rgba(255, 221, 0, 0.3);
+        background: rgba(255, 221, 0, 0.1);
+    }
+    
+    .notification i:first-child {
+        font-size: 1.2rem;
+    }
+    
+    .notification-success i:first-child {
+        color: #00ff00;
+    }
+    
+    .notification-error i:first-child {
+        color: #ff003c;
+    }
+    
+    .notification-warning i:first-child {
+        color: #ffdd00;
+    }
+    
+    .notification span {
+        flex: 1;
+        color: var(--neo-white);
+        font-weight: 500;
+    }
+    
+    .notification-close {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        padding: 0.25rem;
+        transition: color 0.2s;
+    }
+    
+    .notification-close:hover {
+        color: var(--neo-white);
+    }
+`;
+document.head.appendChild(notificationStyles);
+
+
+
+// ===== STATS COUNTER ANIMATION =====
+function animateStatsCounter() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    statNumbers.forEach(stat => {
+        const target = parseInt(stat.getAttribute('data-count'));
+        const duration = 2000;
+        const startTime = Date.now();
+        
+        const animate = () => {
+            const currentTime = Date.now();
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const currentValue = Math.floor(easeOutQuart * target);
+            
+            stat.textContent = currentValue.toLocaleString();
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                stat.textContent = target.toLocaleString();
+            }
+        };
+        
+        // Start animation when element comes into viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animate();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(stat);
+    });
+}
+
+// Initialize stats counter animation when page loads
+window.addEventListener('load', animateStatsCounter);
