@@ -161,6 +161,16 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Porsche Exclusive - Initialization completed');
 });
 
+
+// ===== LOADING SCREEN =====
+function initLoadingScreen() {
+    // Skip loading screen entirely for demo purposes
+    setTimeout(() => {
+        startIntroAnimation();
+    }, 100);
+}
+
+
 // Start GSAP animations for hero section elements
 function startIntroAnimation() {
     // Animate hero title characters sequentially
@@ -1832,4 +1842,155 @@ if (demoLoginBtn) {
             e.target.value = value.substring(0, 5);
         });
     }
+}
+
+
+
+// Add logout button to navigation
+function addLogoutOption() {
+    // Remove existing logout button if present
+    const existingLogout = document.querySelector('.logout-btn');
+    if (existingLogout) existingLogout.remove();
+    
+    // Create logout button
+    const logoutBtn = document.createElement('button');
+    logoutBtn.className = 'nav-link logout-btn';
+    logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>LOGOUT</span>';
+    
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Clear user data
+        appState.user = null;
+        localStorage.removeItem('porsche_user');
+        
+        // Reset login button
+        if (DOM.loginBtn) {
+            DOM.loginBtn.innerHTML = '<i class="fas fa-terminal"></i><span>SYSTEM ACCESS</span>';
+            DOM.loginBtn.classList.remove('logged-in');
+            DOM.loginBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal(DOM.loginModal);
+            };
+        }
+        
+        // Remove logout button
+        logoutBtn.remove();
+        
+        showNotification('Logged out successfully', 'success');
+    });
+    
+    // Add to navigation menu
+    if (DOM.navLinks) {
+        DOM.navLinks.appendChild(logoutBtn);
+    }
+}
+
+// ===== ORDER CONFIRMATION =====
+function showOrderConfirmation(orderId, orderData) {
+    // Create confirmation modal dynamically
+    const confirmationModal = document.createElement('div');
+    confirmationModal.className = 'modal neo-modal';
+    confirmationModal.id = 'confirmationModal';
+    confirmationModal.style.cssText = 'display: flex !important;';
+    
+    confirmationModal.innerHTML = `
+        <div class="modal-content purchase-modal">
+            <div class="modal-header">
+                <div class="modal-logo" style="background: linear-gradient(135deg, #00ff9d, #00f3ff);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>ORDER CONFIRMED!</h2>
+                <span class="close-confirmation-modal" style="cursor: pointer;">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-content" style="text-align: center;">
+                    <div class="confirmation-icon" style="font-size: 4rem; color: #00ff9d; margin-bottom: 1rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 style="color: var(--cyber-blue); margin-bottom: 1rem;">THANK YOU FOR YOUR ORDER</h3>
+                    <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 2rem;">
+                        Your Porsche Exclusive order has been confirmed and is being processed.
+                    </p>
+                    
+                    <div class="order-details neo-glass" style="padding: 1.5rem; margin-bottom: 2rem; text-align: left;">
+                        <h4 style="color: var(--cyber-blue); margin-bottom: 1rem;">
+                            <i class="fas fa-receipt"></i> ORDER DETAILS
+                        </h4>
+                        <div class="detail-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <span>Order Number:</span>
+                            <span style="color: var(--cyber-red); font-weight: bold;">${orderId}</span>
+                        </div>
+                        <div class="detail-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <span>Vehicle:</span>
+                            <span>${orderData.model.toUpperCase()}</span>
+                        </div>
+                        <div class="detail-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <span>Total Amount:</span>
+                            <span style="color: var(--cyber-green); font-weight: bold;">$${orderData.total_price.toLocaleString()}</span>
+                        </div>
+                        <div class="detail-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span>Order Date:</span>
+                            <span>${new Date().toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="confirmation-message" style="background: rgba(0, 255, 157, 0.1); border: 1px solid rgba(0, 255, 157, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
+                        <p style="color: rgba(255, 255, 255, 0.9); margin: 0;">
+                            <i class="fas fa-info-circle" style="color: #00ff9d;"></i>
+                            A confirmation email has been sent to <strong>${orderData.email}</strong>. 
+                            Our team will contact you within 24 hours.
+                        </p>
+                    </div>
+                    
+                    <button id="closeConfirmationBtn" class="neo-btn" style="background: linear-gradient(135deg, #00ff9d, #00f3ff); border: none;">
+                        <i class="fas fa-home"></i>
+                        <span>RETURN TO DASHBOARD</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(confirmationModal);
+    
+    // Add event listeners for closing modal
+    const closeBtn = confirmationModal.querySelector('.close-confirmation-modal');
+    const closeConfirmationBtn = confirmationModal.querySelector('#closeConfirmationBtn');
+    
+    function closeConfirmationModal() {
+        gsap.to(confirmationModal.querySelector('.modal-content'), {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power3.in',
+            onComplete: () => {
+                document.body.removeChild(confirmationModal);
+                document.body.style.overflow = '';
+            }
+        });
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeConfirmationModal);
+    }
+    
+    if (closeConfirmationBtn) {
+        closeConfirmationBtn.addEventListener('click', closeConfirmationModal);
+    }
+    
+    // Close modal when clicking on background
+    confirmationModal.addEventListener('click', (e) => {
+        if (e.target === confirmationModal) {
+            closeConfirmationModal();
+        }
+    });
+    
+    // Animate modal appearance
+    gsap.fromTo(confirmationModal.querySelector('.modal-content'), 
+        { scale: 0.8, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(1.7)' }
+    );
 }
