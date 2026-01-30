@@ -2313,3 +2313,67 @@ function importConfiguration(file) {
     
     reader.readAsText(file);
 }
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', (e) => {
+    // Don't trigger shortcuts in input fields
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    // Ctrl/Cmd + S to save configuration
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        exportConfiguration();
+    }
+    
+    // Ctrl/Cmd + O to load configuration
+    if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+        e.preventDefault();
+        document.getElementById('configFileInput')?.click();
+    }
+    
+    // Escape key to close modals
+    if (e.key === 'Escape') {
+        closeModal(DOM.loginModal);
+        closeModal(DOM.purchaseModal);
+        closeModal(DOM.profileModal);
+    }
+});
+
+// ===== TOUCH OPTIMIZATIONS =====
+if ('ontouchstart' in window) {
+    // Add touch-specific class to document
+    document.documentElement.classList.add('touch-device');
+    
+    // Increase touch target sizes for better usability
+    const touchElements = document.querySelectorAll('button, .nav-link, .control-btn');
+    touchElements.forEach(el => {
+        el.style.minHeight = '44px';
+        el.style.minWidth = '44px';
+    });
+}
+
+// ===== SERVICE WORKER FOR OFFLINE SUPPORT =====
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(error => {
+            console.log('Service Worker registration failed:', error);
+        });
+    });
+}
+
+// ===== PERFORMANCE MONITORING =====
+if ('performance' in window) {
+    // Log important performance metrics
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            if (perfData) {
+                console.log('Performance Metrics:', {
+                    loadTime: perfData.loadEventEnd - perfData.loadEventStart,
+                    domReady: perfData.domComplete - perfData.domInteractive,
+                    pageLoad: perfData.loadEventEnd - perfData.fetchStart
+                });
+            }
+        }, 0);
+    });
+}
