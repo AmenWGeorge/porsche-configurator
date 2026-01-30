@@ -1994,3 +1994,66 @@ function showOrderConfirmation(orderId, orderData) {
         { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(1.7)' }
     );
 }
+
+
+// ===== API FUNCTIONS =====
+async function handleLogin(username, password) {
+    try {
+        const response = await fetch('php/login.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Login error:', error);
+        return {success: false, message: 'Network error'};
+    }
+}
+
+async function handleRegister(username, email, password) {
+    try {
+        const response = await fetch('php/register.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password
+            })
+        });
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Registration error:', error);
+        return {success: false, message: 'Network error'};
+    }
+}
+
+async function handlePurchase(purchaseData) {
+    // Simulate API call with delay
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const orderId = 'PORSCHE-' + Date.now();
+            
+            // Save to local storage for demo purposes
+            const orders = JSON.parse(localStorage.getItem('porsche_orders') || '[]');
+            orders.push({
+                ...purchaseData,
+                orderId,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('porsche_orders', JSON.stringify(orders));
+            
+            resolve({
+                success: true,
+                orderId,
+                message: 'Purchase completed successfully'
+            });
+        }, 1500);
+    });
+}
