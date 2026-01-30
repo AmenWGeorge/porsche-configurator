@@ -1,3 +1,4 @@
+
 // ===== CONFIGURATION =====
 const CONFIG = {
     // API endpoints for backend communication
@@ -137,30 +138,38 @@ const DOM = {
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Porsche Exclusive - Initializing...');
-
-    try { initEventListeners(); } 
-    catch (e) { console.error('❌ Event listeners failed', e); }
-
-    try { initThreeJS(); } 
-    catch (e) { console.error('❌ Three.js failed', e); }
-
-    try { initAudio(); } 
-    catch (e) { console.warn('🔇 Audio disabled', e); }
-
-    try { loadUser(); } 
-    catch (e) { console.warn('👤 User load failed', e); }
-
-    try { initTheme(); } 
-    catch (e) { console.warn('🎨 Theme failed', e); }
-
+    
+    // Debug: Check if DOM elements are loaded
+    console.log('Modal elements loaded:', {
+        loginModal: !!DOM.loginModal,
+        purchaseModal: !!DOM.purchaseModal,
+        profileModal: !!DOM.profileModal,
+        loginBtn: !!DOM.loginBtn,
+        purchaseBtn: !!DOM.purchaseBtn
+    });
+    
+    // Initialize event listeners for user interaction
+    initEventListeners();
+    
+    // Initialize Three.js 3D rendering engine
+    initThreeJS();
+    
+    // Initialize audio system
+    initAudio();
+    
+    // Load saved user from localStorage
+    loadUser();
+    
+    // Initialize theme from saved preference
+    initTheme();
+    
+    // Start intro animation with slight delay
     setTimeout(() => {
-        try { startIntroAnimation(); } 
-        catch (e) { console.warn('🎬 Intro animation failed', e); }
+        startIntroAnimation();
     }, 100);
-
-    console.log('✅ Porsche Exclusive - Initialization completed');
+    
+    console.log('✅ Porsche Exclusive - Initialized successfully');
 });
-
 
 // ===== LOADING SCREEN =====
 function initLoadingScreen() {
@@ -169,7 +178,6 @@ function initLoadingScreen() {
         startIntroAnimation();
     }, 100);
 }
-
 
 // Start GSAP animations for hero section elements
 function startIntroAnimation() {
@@ -266,6 +274,7 @@ function initThreeJS() {
     appState.threejs.renderer = new THREE.WebGLRenderer({ 
         antialias: true,
         alpha: true,
+        powerPreference: "high-performance"
     });
     
     // Configure renderer settings
@@ -458,7 +467,7 @@ function configureModel(model) {
     // Center the model in scene
     const offset = center.clone().multiplyScalar(-scale);
     model.position.copy(offset);
-    model.position.y += 0.15;
+    model.position.y += 0.3;
     
     // Configure all mesh elements in model
     model.traverse((child) => {
@@ -493,7 +502,6 @@ function configureModel(model) {
     // Set initial rotation
     model.rotation.y = Math.PI;
 }
-
 
 // Create fallback primitive model if 3D file fails to load
 function createFallbackModel() {
@@ -565,41 +573,25 @@ function applyCustomization() {
                 child.material.color.copy(color);
                 
                 // Apply material properties based on finish selection
-                switch (appState.config.material) {
+                switch(appState.config.material) {
                     case "metallic":
-                    child.material.roughness = 0.2;
-                    child.material.metalness = 1.0;
-                    child.material.clearcoat = 1.0;
-                    child.material.clearcoatRoughness = 0.1;
-                    break;
-
+                        child.material.roughness = 0.2;
+                        child.material.metalness = 1.0;
+                        child.material.clearcoat = 1.0;
+                        child.material.clearcoatRoughness = 0.1;
+                        break;
                     case "matte":
                         child.material.roughness = 0.9;
                         child.material.metalness = 0.1;
                         child.material.clearcoat = 0.5;
                         child.material.clearcoatRoughness = 0.5;
                         break;
-
-                    case "pearl":
-                        child.material.roughness = 0.15;
-                        child.material.metalness = 0.6;
-                        child.material.clearcoat = 1.0;
-                        child.material.clearcoatRoughness = 0.08;
-                        break; 
-
-                    case "chrome":
-                        child.material.roughness = 0.02;
-                        child.material.metalness = 1.0;
-                        child.material.clearcoat = 0.0;
-                        child.material.clearcoatRoughness = 0.0;
-                        break;
-
                     default: // glossy
                         child.material.roughness = 0.05;
                         child.material.metalness = 0.9;
                         child.material.clearcoat = 1.0;
                         child.material.clearcoatRoughness = 0.03;
-}
+                }
                 
                 child.material.needsUpdate = true;
             }
@@ -655,37 +647,27 @@ function applyCustomization() {
 // Update model statistics display
 function updateModelStats() {
     if (!appState.threejs.model) return;
-
+    
     let vertices = 0;
     let triangles = 0;
-
+    
+    // Count vertices and triangles in all meshes
     appState.threejs.model.traverse((child) => {
         if (child.isMesh && child.geometry) {
-            const geometry = child.geometry;
-
-            // Vertices
-            vertices += geometry.attributes.position.count;
-
-            // Triangles
-            if (geometry.index) {
-                triangles += geometry.index.count / 3;
-            } else {
-                triangles += geometry.attributes.position.count / 3;
-            }
+            vertices += child.geometry.attributes.position.count;
+            triangles += child.geometry.index ? child.geometry.index.count / 3 : child.geometry.attributes.position.count / 3;
         }
     });
-
-    // Store stats
-    appState.ui.stats.vertices = vertices;
-    appState.ui.stats.triangles = Math.round(triangles);
-    appState.ui.stats.polygons = Math.round(triangles / 1000);
-
-    // Update UI
+    
+    // Update state with calculated values
+    appState.ui.stats.polygons = Math.round(vertices / 1000);
+    appState.ui.stats.triangles = triangles;
+    
+    // Update DOM display
     if (DOM.polyCount) {
         DOM.polyCount.textContent = `${appState.ui.stats.polygons}K`;
     }
 }
-
 
 // Show or hide loading indicator overlay
 function showLoadingIndicator(show, message = 'Loading 3D Model') {
@@ -1064,7 +1046,6 @@ function updatePurchaseSummary() {
     }
 }
 
-
 // ===== EVENT LISTENERS (FIXED) =====
 function initEventListeners() {
     // Mobile menu toggle
@@ -1275,6 +1256,9 @@ function initEventListeners() {
             if (sizeValue) {
                 sizeValue.textContent = `${size}"`;
             }
+            
+            // Note: In a real implementation, you would scale the wheel meshes
+            // For now, we just update the display
         });
     }
     
@@ -1604,6 +1588,7 @@ if (DOM.loginForm) {
         });
     }
     
+    // CHECKOUT FORM SUBMISSION - FIXED TO ACTUALLY CALL BACKEND
 // CHECKOUT FORM SUBMISSION - FIXED TO ACTUALLY CALL BACKEND
 if (DOM.checkoutForm) {
     DOM.checkoutForm.addEventListener('submit', async (e) => {
@@ -1844,7 +1829,55 @@ if (demoLoginBtn) {
     }
 }
 
+// ===== USER MANAGEMENT =====
+function loadUser() {
+    const savedUser = localStorage.getItem('porsche_user');
+    if (savedUser) {
+        try {
+            appState.user = JSON.parse(savedUser);
+            updateUserUI(appState.user);
+        } catch (e) {
+            localStorage.removeItem('porsche_user');
+        }
+    }
+}
 
+// Update UI based on user login state
+function updateUserUI(user) {
+    // Ensure user object has required properties
+    const safeUser = {
+        id: user.id || Date.now(),
+        username: user.username || user.email || 'User',
+        email: user.email || user.username || '',
+        is_demo: user.is_demo || false
+    };
+    
+    appState.user = safeUser;
+    localStorage.setItem('porsche_user', JSON.stringify(safeUser));
+    
+    console.log('Updating UI for user:', safeUser);
+    
+    // Update login button to show user profile
+    if (DOM.loginBtn) {
+        DOM.loginBtn.innerHTML = `<i class="fas fa-user-circle"></i><span>${safeUser.username}</span>`;
+        DOM.loginBtn.classList.add('logged-in');
+        
+        // Change click handler to open profile modal
+        DOM.loginBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal(DOM.profileModal);
+        };
+    }
+    
+    // Add logout option to navigation
+    addLogoutOption();
+    
+    // Show welcome notification
+    setTimeout(() => {
+        showNotification(`Welcome back, ${safeUser.username}!`, 'success');
+    }, 500);
+}
 
 // Add logout button to navigation
 function addLogoutOption() {
@@ -1995,7 +2028,6 @@ function showOrderConfirmation(orderId, orderData) {
     );
 }
 
-
 // ===== API FUNCTIONS =====
 async function handleLogin(username, password) {
     try {
@@ -2057,7 +2089,6 @@ async function handlePurchase(purchaseData) {
         }, 1500);
     });
 }
-
 
 // ===== UTILITY FUNCTIONS =====
 function showNotification(message, type = 'info') {
@@ -2176,8 +2207,6 @@ notificationStyles.textContent = `
 `;
 document.head.appendChild(notificationStyles);
 
-
-
 // ===== STATS COUNTER ANIMATION =====
 function animateStatsCounter() {
     const statNumbers = document.querySelectorAll('.stat-number');
@@ -2285,7 +2314,6 @@ function exportConfiguration() {
     showNotification('Configuration exported successfully', 'success');
 }
 
-
 // ===== IMPORT CONFIGURATION =====
 function importConfiguration(file) {
     const reader = new FileReader();
@@ -2377,3 +2405,79 @@ if ('performance' in window) {
         }, 0);
     });
 }
+
+// Emergency fix for page blanking
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        // Ensure body is visible
+        document.body.style.display = 'block';
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+        
+        // Ensure main content is visible
+        const mainContent = document.querySelector('.container, main, section');
+        if (mainContent) {
+            mainContent.style.display = 'block';
+        }
+    }, 100);
+});
+
+// ===== FINAL INITIALIZATION =====
+console.log('🎉 Porsche Exclusive - Ready for customization!');
+
+// Export for debugging and external access
+window.PorscheApp = {
+    state: appState,
+    exportConfig: exportConfiguration,
+    importConfig: importConfiguration,
+    loadModel: loadCarModel,
+    debugOpenModal: function(modalName) {
+        switch(modalName) {
+            case 'login':
+                openModal(DOM.loginModal);
+                break;
+            case 'purchase':
+                openModal(DOM.purchaseModal);
+                break;
+            case 'profile':
+                openModal(DOM.profileModal);
+                break;
+        }
+    }
+};
+
+// Debug helper for testing login
+window.testLogin = async function() {
+    const testData = {
+        username: 'demo@porsche.com',
+        password: 'demo123'
+    };
+    
+    console.log('Testing login with:', testData);
+    
+    try {
+        const response = await fetch('php/login.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(testData)
+        });
+        
+        const text = await response.text();
+        console.log('Response:', text);
+        
+        try {
+            const json = JSON.parse(text);
+            console.log('Parsed JSON:', json);
+            return json;
+        } catch(e) {
+            console.error('Failed to parse as JSON');
+            return null;
+        }
+    } catch(error) {
+        console.error('Fetch error:', error);
+        return null;
+    }
+};
